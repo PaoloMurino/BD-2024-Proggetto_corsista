@@ -1,5 +1,5 @@
-# 🎓 Basi di Dati 2021-22
-Repository with documentation and database developed for the "Basi di Dati" ("Databases") exam of the Bachelor degree in Computer Science at the University of Salerno in A.Y. 2021-22.
+# 🎓 Basi di Dati 2024-2025
+Repository with documentation and database developed for the "Basi di Dati" ("Databases") exam of the Bachelor degree in Computer Science at the University of Salerno in A.Y. 2024-2025.
 
 ## 🔍 About the Project
 The "Basi di Dati"'s project is organized in 3 different parts:
