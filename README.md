@@ -26,3 +26,8 @@ The "Basi di Dati"'s project is organized in 3 different parts:
     />
   </a>
 </p>
+
+## Contributors
+<a href="https://github.com/PaoloMurino/BD-2024-Proggetto_corsista/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=PaoloMurino/BD-2024-Proggetto_corsista" alt ="contributors of the project"/>
+</a>
