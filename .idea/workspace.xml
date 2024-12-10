@@ -6,7 +6,14 @@
   <component name="ChangeListManager">
     <list default="true" id="ae4a01d0-728e-461d-952a-3233dbae1054" name="Changes" comment="">
       <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/.idea/dataSources.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/dataSources/8a2dd7d5-f187-45eb-925a-c9d007cb6239.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/dataSources/8a2dd7d5-f187-45eb-925a-c9d007cb6239/storage_v2/_src_/schema/azienda.NuZi4Q.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/dataSources/8a2dd7d5-f187-45eb-925a-c9d007cb6239/storage_v2/_src_/schema/information_schema.FNRwLQ.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/dataSources/8a2dd7d5-f187-45eb-925a-c9d007cb6239/storage_v2/_src_/schema/mysql.osA4Bg.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/dataSources/8a2dd7d5-f187-45eb-925a-c9d007cb6239/storage_v2/_src_/schema/performance_schema.kIw0nw.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/dataSources/8a2dd7d5-f187-45eb-925a-c9d007cb6239/storage_v2/_src_/schema/sys.zb4BAA.meta" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/.idea/sqldialects.xml" afterDir="false" />
@@ -26,6 +33,12 @@
   <component name="GithubDefaultAccount">
     <option name="defaultAccountId" value="b1897b7f-55fe-45d3-8752-e965b40a66df" />
   </component>
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/PaoloMurino/BD-2024-Proggetto_corsista.git",
+    "accountId": "b1897b7f-55fe-45d3-8752-e965b40a66df"
+  }
+}]]></component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 4
 }</component>
@@ -73,7 +86,7 @@
       <updated>1733836039359</updated>
       <workItem from="1733836040520" duration="485000" />
       <workItem from="1733836966818" duration="658000" />
-      <workItem from="1733837913687" duration="204000" />
+      <workItem from="1733837913687" duration="531000" />
     </task>
     <servers />
   </component>
