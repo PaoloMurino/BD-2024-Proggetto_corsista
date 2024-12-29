@@ -298,6 +298,7 @@ public class Query {
         }
     }
 
+    // 4. Aggiunta di un nuovo docente ad una classe
     public void query4() {
         String query = "INSERT INTO Collaborazione (Docente, CorsoClasse, DataInizioClasse, DataFineClasse)  " +
                 "VALUES (?, ?, ?, ?)";
@@ -340,6 +341,7 @@ public class Query {
         }
     }
 
+    // 5. Modifica del docente a cui è affidato un corso personalizzato
     public void query5() {
         String updateQuery = """
                 UPDATE Gestione
@@ -363,7 +365,6 @@ public class Query {
             String docente = scanner.nextLine();
             preparedStatement.setString(1, docente);
 
-            // Esecuzione della query
             int tupleInserite = preparedStatement.executeUpdate();
             if (tupleInserite > 0) {
                 System.out.println("\n-------------- Docente modificato con successo! --------------");
@@ -376,6 +377,7 @@ public class Query {
         }
     }
 
+    // 6. Stampa di tutti i corsi a catalogo messi a disposizione da un'azienda erogatrice
     public void query6() {
         String query = """
             SELECT DISTINCT CorsoCatalogo.*
@@ -412,7 +414,7 @@ public class Query {
                 }
             }
 
-            // Esegui la query per ottenere i corsi
+            // query per ottenere i corsi
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 System.out.println("\nCorsi a catalogo erogati dall'azienda " + nomeAzienda + ":");
                 boolean hasResults = false;
@@ -452,6 +454,7 @@ public class Query {
         }
     }
 
+    // 7. Stampa di tutte le aziende erogatrici non impegnate in corsi personalizzati
     public void query7() {
         String query = """
             SELECT DISTINCT Azienda.PIVA, Azienda.Nome, Azienda.Mission, Azienda.Ruolo, Azienda.Tipo
@@ -498,6 +501,7 @@ public class Query {
         }
     }
 
+    // 8. Verifica della possibilità di assegnare un docente ad un corso
     public void query8() {
         String query = """
             SELECT COUNT(*) AS NumCorsi
@@ -530,6 +534,7 @@ public class Query {
         }
     }
 
+    // 9. Verifica l’eventuale presenza di docenti attualmente non coinvolti in corsi
     public void query9() {
         String query = """
                 SELECT Dipendente.CF, Dipendente.Nome, Dipendente.Cognome, Dipendente.Azienda
@@ -567,6 +572,7 @@ public class Query {
         }
     }
 
+    // 10. Per ciascun corso a catalogo, stampa il numero totale di discenti
     public void query10() {
         String query = """
             SELECT 
@@ -606,6 +612,7 @@ public class Query {
         }
     }
 
+    // 11. Stampa i dati del docente maggiormente impiegato in corsi (a catalogo e/o personalizzato)
     public void query11() {
         String query = """
             SELECT 
