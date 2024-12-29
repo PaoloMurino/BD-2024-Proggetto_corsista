@@ -298,7 +298,7 @@ public class Query {
         }
     }
 
-    // 4. Aggiunta di un nuovo docente ad una classe
+    // 4. Aggiunta di un nuovo docente a una classe
     public void query4() {
         String query = "INSERT INTO Collaborazione (Docente, CorsoClasse, DataInizioClasse, DataFineClasse)  " +
                 "VALUES (?, ?, ?, ?)";
@@ -393,7 +393,7 @@ public class Query {
             preparedStatement.setString(1, azienda);
 
             // Variabile per il nome dell'azienda
-            String nomeAzienda = null;
+            String nomeAzienda;
 
             // Query per ottenere il nome dell'azienda
             String queryAzienda = """
@@ -501,7 +501,7 @@ public class Query {
         }
     }
 
-    // 8. Verifica della possibilità di assegnare un docente ad un corso
+    // 8. Verifica della possibilità di assegnare un docente a un corso
     public void query8() {
         String query = """
             SELECT COUNT(*) AS NumCorsi
@@ -575,20 +575,20 @@ public class Query {
     // 10. Per ciascun corso a catalogo, stampa il numero totale di discenti
     public void query10() {
         String query = """
-            SELECT 
+            SELECT
                 CorsoCatalogo.ID AS CorsoID,
                 CorsoCatalogo.Titolo AS TitoloCorso,
                 COALESCE(SUM(Iscrizione.NumDipendenti), 0) AS TotaleDiscenti
-            FROM 
+            FROM
                 CorsoCatalogo
             LEFT JOIN Classe ON CorsoCatalogo.ID = Classe.CorsoCatalogo
-            LEFT JOIN 
+            LEFT JOIN
                 Iscrizione ON Classe.CorsoCatalogo = Iscrizione.CorsoClasse
                 AND Classe.DataInizio = Iscrizione.DataInizioClasse
                 AND Classe.DataFine = Iscrizione.DataFineClasse
-            GROUP BY 
+            GROUP BY
                 CorsoCatalogo.ID, CorsoCatalogo.Titolo
-            ORDER BY 
+            ORDER BY
                 CorsoCatalogo.ID;
         """;
 
@@ -615,22 +615,22 @@ public class Query {
     // 11. Stampa i dati del docente maggiormente impiegato in corsi (a catalogo e/o personalizzato)
     public void query11() {
         String query = """
-            SELECT 
-                Dipendente.CF, 
-                Dipendente.Nome, 
-                Dipendente.Cognome, 
+            SELECT
+                Dipendente.CF,
+                Dipendente.Nome,
+                Dipendente.Cognome,
                 COALESCE(G.TotaleGestione, 0) + COALESCE(C.TotaleCollaborazione, 0) AS TotalePartecipazioni
-            FROM 
+            FROM
                 Dipendente
-            JOIN 
+            JOIN
                 Docente ON Dipendente.CF = Docente.CF
-            LEFT JOIN 
-                (SELECT Docente, COUNT(*) AS TotaleGestione FROM Gestione GROUP BY Docente) AS G 
+            LEFT JOIN
+                (SELECT Docente, COUNT(*) AS TotaleGestione FROM Gestione GROUP BY Docente) AS G
                 ON Docente.CF = G.Docente
-            LEFT JOIN 
-                (SELECT Docente, COUNT(*) AS TotaleCollaborazione FROM Collaborazione GROUP BY Docente) AS C 
+            LEFT JOIN
+                (SELECT Docente, COUNT(*) AS TotaleCollaborazione FROM Collaborazione GROUP BY Docente) AS C
                 ON Docente.CF = C.Docente
-            ORDER BY 
+            ORDER BY
                 TotalePartecipazioni DESC
             LIMIT 1;
         """;

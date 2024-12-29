@@ -4,9 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ae4a01d0-728e-461d-952a-3233dbae1054" name="Changes" comment="Implementazioni di query 1-7">
+    <list default="true" id="ae4a01d0-728e-461d-952a-3233dbae1054" name="Changes" comment="Implementazioni di query 8-11 (aggiunta commenti per leggibilità)">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/InterfacciaApp.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/InterfacciaApp.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/Query.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Query.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -113,7 +112,7 @@
       <workItem from="1735317067439" duration="3977000" />
       <workItem from="1735374059573" duration="2872000" />
       <workItem from="1735377319732" duration="5166000" />
-      <workItem from="1735477390609" duration="1825000" />
+      <workItem from="1735477390609" duration="2532000" />
     </task>
     <task id="LOCAL-00001" summary="Merging">
       <option name="closed" value="true" />
@@ -147,7 +146,23 @@
       <option name="project" value="LOCAL" />
       <updated>1735378795501</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="Implementazioni di query 8-11">
+      <option name="closed" value="true" />
+      <created>1735480751397</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1735480751397</updated>
+    </task>
+    <task id="LOCAL-00006" summary="Implementazioni di query 8-11 (aggiunta commenti per leggibilità)">
+      <option name="closed" value="true" />
+      <created>1735481063761</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1735481063761</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -158,6 +173,8 @@
     <MESSAGE value="Aggiornamento gitignore" />
     <MESSAGE value="Creazione file Database.java" />
     <MESSAGE value="Implementazioni di query 1-7" />
-    <option name="LAST_COMMIT_MESSAGE" value="Implementazioni di query 1-7" />
+    <MESSAGE value="Implementazioni di query 8-11" />
+    <MESSAGE value="Implementazioni di query 8-11 (aggiunta commenti per leggibilità)" />
+    <option name="LAST_COMMIT_MESSAGE" value="Implementazioni di query 8-11 (aggiunta commenti per leggibilità)" />
   </component>
 </project>
