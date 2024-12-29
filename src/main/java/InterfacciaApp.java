@@ -71,11 +71,11 @@ public class InterfacciaApp {
                 case 5 -> query.query5();
                 case 6 -> query.query6();
                 case 7 -> query.query7();
-                /*case 8 -> query.query8();
+                case 8 -> query.query8();
                 case 9 -> query.query9();
                 case 10 -> query.query10();
                 case 11 -> query.query11();
-                case 12 -> query.query12();
+                /*case 12 -> query.query12();
                 case 13 -> query.query13();
                 case 14 -> query.query14();
                 case 15 -> query.query15();*/
@@ -87,7 +87,7 @@ public class InterfacciaApp {
 
             // Ritardo prima di far ripartire il ciclo per maggiore leggibilità
             try {
-                Thread.sleep(2100); // Ritardo di 1 secondo (1000 millisecondi)
+                Thread.sleep(2100);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt(); // Ripristina lo stato di interruzione del thread
                 System.out.println("Il ritardo è stato interrotto.");

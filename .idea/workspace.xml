@@ -4,19 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ae4a01d0-728e-461d-952a-3233dbae1054" name="Changes" comment="Creazione file Database.java">
-      <change afterPath="$PROJECT_DIR$/src/main/java/InterfacciaApp.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/Query.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/8a2dd7d5-f187-45eb-925a-c9d007cb6239.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/8a2dd7d5-f187-45eb-925a-c9d007cb6239/storage_v2/_src_/schema/azienda.NuZi4Q.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/8a2dd7d5-f187-45eb-925a-c9d007cb6239/storage_v2/_src_/schema/information_schema.FNRwLQ.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/8a2dd7d5-f187-45eb-925a-c9d007cb6239/storage_v2/_src_/schema/mysql.osA4Bg.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/8a2dd7d5-f187-45eb-925a-c9d007cb6239/storage_v2/_src_/schema/performance_schema.kIw0nw.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/8a2dd7d5-f187-45eb-925a-c9d007cb6239/storage_v2/_src_/schema/sys.zb4BAA.meta" beforeDir="false" />
+    <list default="true" id="ae4a01d0-728e-461d-952a-3233dbae1054" name="Changes" comment="Implementazioni di query 1-7">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/Main.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/InterfacciaApp.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/InterfacciaApp.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Query.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Query.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -121,7 +112,8 @@
       <workItem from="1735308360944" duration="43000" />
       <workItem from="1735317067439" duration="3977000" />
       <workItem from="1735374059573" duration="2872000" />
-      <workItem from="1735377319732" duration="898000" />
+      <workItem from="1735377319732" duration="5166000" />
+      <workItem from="1735477390609" duration="1825000" />
     </task>
     <task id="LOCAL-00001" summary="Merging">
       <option name="closed" value="true" />
@@ -147,7 +139,15 @@
       <option name="project" value="LOCAL" />
       <updated>1733839889237</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="Implementazioni di query 1-7">
+      <option name="closed" value="true" />
+      <created>1735378795501</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1735378795501</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -157,6 +157,7 @@
     <MESSAGE value="Merging" />
     <MESSAGE value="Aggiornamento gitignore" />
     <MESSAGE value="Creazione file Database.java" />
-    <option name="LAST_COMMIT_MESSAGE" value="Creazione file Database.java" />
+    <MESSAGE value="Implementazioni di query 1-7" />
+    <option name="LAST_COMMIT_MESSAGE" value="Implementazioni di query 1-7" />
   </component>
 </project>

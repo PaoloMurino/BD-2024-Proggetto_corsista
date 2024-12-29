@@ -497,4 +497,157 @@ public class Query {
             System.out.println("Errore nella comunicazione con il database.");
         }
     }
+
+    public void query8() {
+        String query = """
+            SELECT COUNT(*) AS NumCorsi
+            FROM Gestione
+            WHERE Docente = ?
+        """;
+
+        try (PreparedStatement preparedStatement = database.getConnection().prepareStatement(query)) {
+            System.out.println("\n-------------- Verifica possibilità di assegnare un docente ad un corso --------------");
+            System.out.print("Inserisci il CF del docente: ");
+            String cfDocente = scanner.nextLine();
+            preparedStatement.setString(1, cfDocente);
+
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    int numCorsi = resultSet.getInt("NumCorsi");
+
+                    if (numCorsi < 3) {
+                        System.out.println("Sì, è possibile assegnargli un nuovo corso. Attualmente gestisce " + numCorsi + " corsi.");
+                    } else {
+                        System.out.println("No, il docente è già impegnato in 3 corsi personalizzati.");
+                    }
+                } else {
+                    System.out.println("Docente non trovato nella tabella Gestione.");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println("Errore nella comunicazione con il database.");
+        }
+    }
+
+    public void query9() {
+        String query = """
+                SELECT Dipendente.CF, Dipendente.Nome, Dipendente.Cognome, Dipendente.Azienda
+                FROM Dipendente
+                JOIN Docente ON Dipendente.CF = Docente.CF
+                LEFT JOIN Gestione ON Docente.CF = Gestione.Docente
+                LEFT JOIN Collaborazione ON Docente.CF = Collaborazione.Docente
+                WHERE Gestione.Docente IS NULL
+                  AND Collaborazione.Docente IS NULL
+                ORDER BY Dipendente.Cognome, Dipendente.Nome;
+                """;
+
+        try (PreparedStatement preparedStatement = database.getConnection().prepareStatement(query)) {
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                System.out.println("\n-------------- Docenti non impegnati in corsi --------------");
+
+                boolean hasResults = false;
+                while (resultSet.next()) {
+                    String cf = resultSet.getString("CF");
+                    String nome = resultSet.getString("Nome");
+                    String cognome = resultSet.getString("Cognome");
+                    String azienda = resultSet.getString("Azienda");
+
+                    System.out.println("- CF: " + cf + ", Nome: " + nome + ", Cognome: " + cognome + ", Azienda: " + azienda);
+                    hasResults = true;
+                }
+
+                if (!hasResults) {
+                    System.out.println("Nessun docente trovato che non sia impegnato in corsi.");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println("Errore nella comunicazione con il database.");
+        }
+    }
+
+    public void query10() {
+        String query = """
+            SELECT 
+                CorsoCatalogo.ID AS CorsoID,
+                CorsoCatalogo.Titolo AS TitoloCorso,
+                COALESCE(SUM(Iscrizione.NumDipendenti), 0) AS TotaleDiscenti
+            FROM 
+                CorsoCatalogo
+            LEFT JOIN Classe ON CorsoCatalogo.ID = Classe.CorsoCatalogo
+            LEFT JOIN 
+                Iscrizione ON Classe.CorsoCatalogo = Iscrizione.CorsoClasse
+                AND Classe.DataInizio = Iscrizione.DataInizioClasse
+                AND Classe.DataFine = Iscrizione.DataFineClasse
+            GROUP BY 
+                CorsoCatalogo.ID, CorsoCatalogo.Titolo
+            ORDER BY 
+                CorsoCatalogo.ID;
+        """;
+
+        try (PreparedStatement preparedStatement = database.getConnection().prepareStatement(query);
+             ResultSet resultSet = preparedStatement.executeQuery()) {
+
+            System.out.println("\n-------------- Totale discenti per ciascun corso a catalogo --------------");
+
+            while (resultSet.next()) {
+                int corsoId = resultSet.getInt("CorsoID");
+                String titoloCorso = resultSet.getString("TitoloCorso");
+                int totaleDiscenti = resultSet.getInt("TotaleDiscenti");
+
+                System.out.printf("Corso ID: %d | Titolo: %s | Totale Discenti: %d%n",
+                        corsoId, titoloCorso, totaleDiscenti);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println("Errore nella comunicazione con il database.");
+        }
+    }
+
+    public void query11() {
+        String query = """
+            SELECT 
+                Dipendente.CF, 
+                Dipendente.Nome, 
+                Dipendente.Cognome, 
+                COALESCE(G.TotaleGestione, 0) + COALESCE(C.TotaleCollaborazione, 0) AS TotalePartecipazioni
+            FROM 
+                Dipendente
+            JOIN 
+                Docente ON Dipendente.CF = Docente.CF
+            LEFT JOIN 
+                (SELECT Docente, COUNT(*) AS TotaleGestione FROM Gestione GROUP BY Docente) AS G 
+                ON Docente.CF = G.Docente
+            LEFT JOIN 
+                (SELECT Docente, COUNT(*) AS TotaleCollaborazione FROM Collaborazione GROUP BY Docente) AS C 
+                ON Docente.CF = C.Docente
+            ORDER BY 
+                TotalePartecipazioni DESC
+            LIMIT 1;
+        """;
+
+        try (PreparedStatement preparedStatement = database.getConnection().prepareStatement(query);
+             ResultSet resultSet = preparedStatement.executeQuery()) {
+
+            System.out.println("\n-------------- Docente maggiormente impiegato --------------");
+
+            if (resultSet.next()) {
+                String cf = resultSet.getString("CF");
+                String nome = resultSet.getString("Nome");
+                String cognome = resultSet.getString("Cognome");
+                int totalePartecipazioni = resultSet.getInt("TotalePartecipazioni");
+
+                System.out.printf("CF: %s | Nome: %s | Cognome: %s | Totale Partecipazioni: %d%n",
+                        cf, nome, cognome, totalePartecipazioni);
+            } else {
+                System.out.println("Nessun docente trovato.");
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println("Errore nella comunicazione con il database.");
+        }
+    }
 }
