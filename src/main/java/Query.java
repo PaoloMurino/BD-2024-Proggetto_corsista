@@ -158,6 +158,13 @@ public class Query {
             preparedStatement.setInt(5, numDipendenti);
             scanner.nextLine(); // Pulizia del buffer
 
+            int tupleInserite = preparedStatement.executeUpdate();
+            if (tupleInserite > 0) {
+                System.out.println("\n-------------- Azienda iscritta con successo! --------------");
+            } else {
+                System.out.println("\n-------------- Errore durante l'iscrizione dell'Azienda. --------------");
+            }
+
             // Aggiornamento attributo RicavoClasse
             String updateQuery = """
                 UPDATE Classe
@@ -182,13 +189,6 @@ public class Query {
                 } else {
                     System.out.println("Errore durante l'aggiornamento di Ricavo Classe.");
                 }
-            }
-
-            int tupleInserite = preparedStatement.executeUpdate();
-            if (tupleInserite > 0) {
-                System.out.println("\n-------------- Azienda iscritta con successo! --------------");
-            } else {
-                System.out.println("\n-------------- Errore durante l'iscrizione dell'Azienda. --------------");
             }
         } catch (SQLException e) {
             handleSQLException(e);
