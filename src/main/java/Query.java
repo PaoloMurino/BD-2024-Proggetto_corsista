@@ -74,8 +74,7 @@ public class Query {
                 System.out.println("\n-------------- Errore durante l'inserimento del corso. --------------");
             }
         } catch (SQLException e) {
-            e.printStackTrace();
-            System.out.println("Errore nella comunicazione con il database.");
+            handleSQLException(e);
         }
     }
 
@@ -83,8 +82,16 @@ public class Query {
     public void query2() {
         String query = "INSERT INTO Iscrizione (Azienda, DataInizioClasse, DataFineClasse, CorsoClasse, " +
                 "NumDipendenti) VALUES (?, ?, ?, ?, ?)";
+        String trovaClasse = """
+                    SELECT Classe.DataScadenzaIscrizioni
+                    FROM Classe
+                    WHERE Classe.CorsoCatalogo = ?
+                    AND Classe.DataInizio = ?
+                    AND Classe.DataFine = ?
+                    """;
 
-        try (PreparedStatement preparedStatement = database.getConnection().prepareStatement(query)) {
+        try (PreparedStatement preparedStatement = database.getConnection().prepareStatement(query);
+             PreparedStatement checkStatement = database.getConnection().prepareStatement(trovaClasse)) {
             System.out.println("\n-------------- Iscrizione di un'Azienda ad una classe! --------------");
             System.out.print("Inserisci la P.IVA dell'Azienda: ");
             String azienda = scanner.nextLine();
@@ -97,17 +104,50 @@ public class Query {
             }
             int corsoClasse = scanner.nextInt();
             preparedStatement.setInt(4, corsoClasse);
+            checkStatement.setInt(1, corsoClasse);
             scanner.nextLine(); // Pulizia del buffer
 
             System.out.print("Inserisci la data di inizio della classe (formato YYYY-MM-DD): ");
-            String dataInizioInput = scanner.nextLine();
-            Date dataInizio = Date.valueOf(dataInizioInput);
+            Date dataInizio = null;
+            while (dataInizio == null) {
+                String dataInizioInput = scanner.nextLine();
+                try {
+                    dataInizio = Date.valueOf(dataInizioInput);
+                } catch (IllegalArgumentException e) {
+                    System.out.println("Errore: Formato data non valido! Riprova (esempio: 2024-12-30): ");
+                }
+            }
             preparedStatement.setDate(2, dataInizio);
+            checkStatement.setDate(2, dataInizio);
 
             System.out.print("Inserisci la data di fine della classe (formato YYYY-MM-DD): ");
-            String dataFineInput = scanner.nextLine();
-            Date dataFine = Date.valueOf(dataFineInput);
+            Date dataFine = null;
+            while (dataFine == null) {
+                String dataFineInput = scanner.nextLine();
+                try {
+                    dataFine = Date.valueOf(dataFineInput);
+                } catch (IllegalArgumentException e) {
+                    System.out.println("Errore: Formato data non valido! Riprova (esempio: 2024-12-30): ");
+                }
+            }
             preparedStatement.setDate(3, dataFine);
+            checkStatement.setDate(3, dataFine);
+
+            // controllo sulla data di scadenza iscrizioni
+            try (ResultSet resultSet = checkStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    Date dataScadenzaIscrizioni = resultSet.getDate("DataScadenzaIscrizioni");
+                    Date dataOggi = new Date(System.currentTimeMillis());
+
+                    if (dataOggi.after(dataScadenzaIscrizioni)) {
+                        System.out.println("Errore: Non è possibile iscrivere l'azienda. La data di scadenza iscrizioni è già passata!");
+                        return;
+                    }
+                } else {
+                    System.out.println("Errore: La classe specificata non esiste.");
+                    return;
+                }
+            }
 
             System.out.print("Inserisci il numero di dipendenti da iscrivere: ");
             while (!scanner.hasNextInt()) {
@@ -144,7 +184,6 @@ public class Query {
                 }
             }
 
-            // Esecuzione della query
             int tupleInserite = preparedStatement.executeUpdate();
             if (tupleInserite > 0) {
                 System.out.println("\n-------------- Azienda iscritta con successo! --------------");
@@ -152,8 +191,7 @@ public class Query {
                 System.out.println("\n-------------- Errore durante l'iscrizione dell'Azienda. --------------");
             }
         } catch (SQLException e) {
-            e.printStackTrace();
-            System.out.println("Errore nella comunicazione con il database.");
+            handleSQLException(e);
         }
     }
 
@@ -198,13 +236,27 @@ public class Query {
             preparedStatement.setString(5, tipoServizio);
 
             System.out.print("Inserisci la data di inizio del corso (formato YYYY-MM-DD): ");
-            String dataInizioInput = scanner.nextLine();
-            Date dataInizio = Date.valueOf(dataInizioInput);
+            Date dataInizio = null;
+            while (dataInizio == null) {
+                String dataInizioInput = scanner.nextLine();
+                try {
+                    dataInizio = Date.valueOf(dataInizioInput);
+                } catch (IllegalArgumentException e) {
+                    System.out.println("Errore: Formato data non valido! Riprova (esempio: 2024-12-30): ");
+                }
+            }
             preparedStatement.setDate(6, dataInizio);
 
             System.out.print("Inserisci la data di fine del corso (formato YYYY-MM-DD): ");
-            String dataFineInput = scanner.nextLine();
-            Date dataFine = Date.valueOf(dataFineInput);
+            Date dataFine = null;
+            while (dataFine == null) {
+                String dataFineInput = scanner.nextLine();
+                try {
+                    dataFine = Date.valueOf(dataFineInput);
+                } catch (IllegalArgumentException e) {
+                    System.out.println("Errore: Formato data non valido! Riprova (esempio: 2024-12-30): ");
+                }
+            }
             preparedStatement.setDate(7, dataFine);
 
             System.out.print("Il corso richiede il TestDMA? (Sì/No): ");
@@ -268,23 +320,7 @@ public class Query {
                             }
                         }
 
-                        String queryGestione = "INSERT INTO Gestione (Docente, CorsoPersonalizzato) VALUES (?, ?)";
-                        try (PreparedStatement gestioneStatement = database.getConnection().prepareStatement(queryGestione)) {
-                            System.out.print("Inserisci il CF del docente che gestisce il corso: ");
-                            String docente = scanner.nextLine();
-                            gestioneStatement.setString(1, docente);
-
-                            // Imposta l'ID del corso personalizzato
-                            gestioneStatement.setInt(2, idCorsoPersonalizzato);
-
-                            // Esecuzione della query per creare la richiesta
-                            int tupleInseriteGestione = gestioneStatement.executeUpdate();
-                            if (tupleInseriteGestione > 0) {
-                                System.out.println("\n-------------- Gestione creata con successo! --------------");
-                            } else {
-                                System.out.println("\n-------------- Errore durante la creazione della gestione! --------------");
-                            }
-                        }
+                        creaGestioneCorso(idCorsoPersonalizzato);
                     } else {
                         System.out.println("Errore: Impossibile ottenere l'ID del corso personalizzato appena creato!");
                     }
@@ -293,8 +329,54 @@ public class Query {
                 System.out.println("\n-------------- Errore durante la creazione del corso. --------------");
             }
         } catch (SQLException e) {
-            e.printStackTrace();
-            System.out.println("Errore nella comunicazione con il database.");
+            handleSQLException(e);
+        }
+    }
+
+    private void creaGestioneCorso(int idCorsoPersonalizzato) {
+        String queryGestione = "INSERT INTO Gestione (Docente, CorsoPersonalizzato) VALUES (?, ?)";
+        String queryVerificaDocente = "SELECT COUNT(*) FROM Docente WHERE CF = ?"; // Controlla se il docente esiste nel database
+        boolean gestioneCreato = false;
+
+        while (!gestioneCreato) {
+            try (PreparedStatement verificaStatement = database.getConnection().prepareStatement(queryVerificaDocente)) {
+                System.out.print("Inserisci il CF del docente che gestirà il corso: ");
+                String docente = scanner.nextLine();
+
+                // Verifica se il docente esiste nel database
+                verificaStatement.setString(1, docente);
+                try (ResultSet resultSet = verificaStatement.executeQuery()) {
+                    if (resultSet.next() && resultSet.getInt(1) > 0) {
+                        // Il docente esiste
+                        try (PreparedStatement gestioneStatement = database.getConnection().prepareStatement(queryGestione)) {
+                            gestioneStatement.setString(1, docente);
+                            gestioneStatement.setInt(2, idCorsoPersonalizzato);
+
+                            // Esecuzione della query per creare la gestione
+                            int tupleInseriteGestione = gestioneStatement.executeUpdate();
+                            if (tupleInseriteGestione > 0) {
+                                System.out.println("\n-------------- Gestione creata con successo! --------------");
+                                gestioneCreato = true;
+                            } else {
+                                System.out.println("\n-------------- Errore durante la creazione della gestione! --------------");
+                                System.out.println("Per favore, inserisci un nuovo docente.");
+                            }
+                        }
+                    } else {
+                        System.out.println("Errore: Il CF inserito non corrisponde a nessun docente nel database.");
+                        System.out.println("Per favore, inserisci un codice fiscale valido.");
+                    }
+                }
+            } catch (SQLException e) {
+                // Gestione dell'errore del trigger RV1
+                if (e.getSQLState().equals("45000")) {
+                    System.out.println("Errore: Il docente è già assegnato a 3 corsi personalizzati.");
+                    System.out.println("Prova a inserire un altro docente.");
+                } else {
+                    handleSQLException(e);
+                    gestioneCreato = true; // Esce dal ciclo in caso di errore irreversibile
+                }
+            }
         }
     }
 
@@ -319,13 +401,27 @@ public class Query {
             scanner.nextLine(); // Pulizia del buffer
 
             System.out.print("Inserisci la data di inizio della classe (formato YYYY-MM-DD): ");
-            String dataInizioInput = scanner.nextLine();
-            Date dataInizio = Date.valueOf(dataInizioInput);
+            Date dataInizio = null;
+            while (dataInizio == null) {
+                String dataInizioInput = scanner.nextLine();
+                try {
+                    dataInizio = Date.valueOf(dataInizioInput);
+                } catch (IllegalArgumentException e) {
+                    System.out.println("Errore: Formato data non valido! Riprova (esempio: 2024-12-30): ");
+                }
+            }
             preparedStatement.setDate(3, dataInizio);
 
             System.out.print("Inserisci la data di fine della classe (formato YYYY-MM-DD): ");
-            String dataFineInput = scanner.nextLine();
-            Date dataFine = Date.valueOf(dataFineInput);
+            Date dataFine = null;
+            while (dataFine == null) {
+                String dataFineInput = scanner.nextLine();
+                try {
+                    dataFine = Date.valueOf(dataFineInput);
+                } catch (IllegalArgumentException e) {
+                    System.out.println("Errore: Formato data non valido! Riprova (esempio: 2024-12-30): ");
+                }
+            }
             preparedStatement.setDate(4, dataFine);
 
             // Esecuzione della query
@@ -336,8 +432,7 @@ public class Query {
                 System.out.println("\n-------------- Errore durante l'aggiunta del docente. --------------");
             }
         } catch (SQLException e) {
-            e.printStackTrace();
-            System.out.println("Errore nella comunicazione con il database.");
+            handleSQLException(e);
         }
     }
 
@@ -372,8 +467,7 @@ public class Query {
                 System.out.println("\n-------------- Errore durante la modifica del docente. --------------");
             }
         } catch (SQLException e) {
-            e.printStackTrace();
-            System.out.println("Errore nella comunicazione con il database.");
+            handleSQLException(e);
         }
     }
 
@@ -449,8 +543,7 @@ public class Query {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
-            System.out.println("Errore nella comunicazione con il database.");
+            handleSQLException(e);
         }
     }
 
@@ -496,8 +589,7 @@ public class Query {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
-            System.out.println("Errore nella comunicazione con il database.");
+            handleSQLException(e);
         }
     }
 
@@ -529,8 +621,7 @@ public class Query {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
-            System.out.println("Errore nella comunicazione con il database.");
+            handleSQLException(e);
         }
     }
 
@@ -567,8 +658,7 @@ public class Query {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
-            System.out.println("Errore nella comunicazione con il database.");
+            handleSQLException(e);
         }
     }
 
@@ -607,8 +697,7 @@ public class Query {
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
-            System.out.println("Errore nella comunicazione con il database.");
+            handleSQLException(e);
         }
     }
 
@@ -653,8 +742,209 @@ public class Query {
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
-            System.out.println("Errore nella comunicazione con il database.");
+            handleSQLException(e);
+        }
+    }
+
+    public void query12() {
+        String query = """
+            SELECT CorsoCatalogo.*,
+                   COALESCE(ClassiCount.NumeroClassi, 0) AS NumeroClassi
+            FROM CorsoCatalogo
+            LEFT JOIN (
+                SELECT CorsoCatalogo, COUNT(*) AS NumeroClassi
+                FROM Classe
+                GROUP BY CorsoCatalogo
+            ) AS ClassiCount ON CorsoCatalogo.ID = ClassiCount.CorsoCatalogo
+            WHERE COALESCE(ClassiCount.NumeroClassi, 0) <= 1
+            ORDER BY CorsoCatalogo.ID;
+        """;
+
+        try (PreparedStatement preparedStatement = database.getConnection().prepareStatement(query);
+             ResultSet resultSet = preparedStatement.executeQuery()) {
+
+            System.out.println("\n------ Corsi a catalogo con massimo 1 classe associata ------");
+            while (resultSet.next()) {
+                int id = resultSet.getInt("ID");
+                String titolo = resultSet.getString("Titolo");
+                String descrizione = resultSet.getString("Descrizione");
+                int numOre = resultSet.getInt("NumOre");
+                String modalita = resultSet.getString("Modalita");
+                String settore = resultSet.getString("Settore");
+                String tipoServizio = resultSet.getString("TipoServizio");
+                double costoAPersona = resultSet.getDouble("CostoAPersona");
+                int numeroClassi = resultSet.getInt("NumeroClassi");
+
+                System.out.printf("""
+                        ID: %d
+                        Titolo: %s
+                        Descrizione: %s
+                        Numero Ore: %d
+                        Modalità: %s
+                        Settore: %s
+                        Tipologia Servizio: %s
+                        Costo a Persona: %.2f
+                        Numero Classi: %d
+                        ---------------------------------
+                        """,
+                        id, titolo, descrizione, numOre, modalita, settore, tipoServizio, costoAPersona, numeroClassi);
+            }
+
+        } catch (SQLException e) {
+            handleSQLException(e);
+        }
+    }
+
+    public void query13() {
+        String query = """
+            SELECT Azienda.*,
+                   COALESCE(RicaviClassi.RicavoTotaleClassi, 0) + COALESCE(RicaviPersonalizzati.RicavoTotalePersonalizzati, 0) AS RicavoTotale
+            FROM Azienda
+            LEFT JOIN (
+                SELECT Classe.Azienda, SUM(Classe.RicavoClasse) AS RicavoTotaleClassi
+                FROM Classe
+                GROUP BY Classe.Azienda
+            ) AS RicaviClassi ON Azienda.PIVA = RicaviClassi.Azienda
+            LEFT JOIN (
+                SELECT Dipendente.Azienda, SUM(CorsoPersonalizzato.CostoTotale) AS RicavoTotalePersonalizzati
+                FROM Dipendente
+                JOIN Docente ON Dipendente.CF = Docente.CF
+                JOIN Gestione ON Docente.CF = Gestione.Docente
+                JOIN CorsoPersonalizzato ON Gestione.CorsoPersonalizzato = CorsoPersonalizzato.ID
+                GROUP BY Dipendente.Azienda
+            ) AS RicaviPersonalizzati ON Azienda.PIVA = RicaviPersonalizzati.Azienda
+            WHERE (Azienda.Ruolo = 'Erogatrice' OR Azienda.Ruolo = 'Entrambe')
+            ORDER BY RicavoTotale DESC;
+        """;
+
+        try (PreparedStatement preparedStatement = database.getConnection().prepareStatement(query);
+             ResultSet resultSet = preparedStatement.executeQuery()) {
+
+            System.out.println("\n------ Aziende erogatrici e ricavi totali ------");
+            while (resultSet.next()) {
+                String piva = resultSet.getString("PIVA");
+                String nome = resultSet.getString("Nome");
+                String mission = resultSet.getString("Mission");
+                String ruolo = resultSet.getString("Ruolo");
+                String tipo = resultSet.getString("Tipo");
+                int numDipendenti = resultSet.getInt("NumDipendenti");
+                double ricavoTotale = resultSet.getDouble("RicavoTotale");
+
+                System.out.printf("""
+                    PIVA: %s
+                    Nome: %s
+                    Mission: %s
+                    Ruolo: %s
+                    Tipo: %s
+                    Numero dipendenti: %d
+                    Ricavo Totale: %.2f
+                    ---------------------------------
+                    """, piva, nome, mission, ruolo, tipo, numDipendenti, ricavoTotale);
+            }
+
+        } catch (SQLException e) {
+            handleSQLException(e);
+        }
+    }
+
+    public void query14() {
+        String query = """
+            SELECT *
+            FROM Classe
+            ORDER BY CorsoCatalogo, DataInizio;
+        """;
+
+        try (PreparedStatement preparedStatement = database.getConnection().prepareStatement(query);
+             ResultSet resultSet = preparedStatement.executeQuery()) {
+
+            System.out.println("\n------ Dettagli delle classi e relativi ricavi ------");
+            while (resultSet.next()) {
+                int corsoCatalogo = resultSet.getInt("CorsoCatalogo");
+                Date dataInizio = resultSet.getDate("DataInizio");
+                Date dataFine = resultSet.getDate("DataFine");
+                Date dataScadenzaIscrizioni = resultSet.getDate("DataScadenzaIscrizioni");
+                double ricavoClasse = resultSet.getDouble("RicavoClasse");
+                String azienda = resultSet.getString("Azienda");
+
+                System.out.printf("""
+                    ID corso erogato: %d
+                    Data Inizio: %s
+                    Data Fine: %s
+                    Data Scadenza Iscrizioni: %s
+                    Ricavo Classe: %.2f
+                    Azienda erogatrice: %s
+                    ---------------------------------
+                    """, corsoCatalogo, dataInizio, dataFine, dataScadenzaIscrizioni, ricavoClasse, azienda);
+            }
+
+        } catch (SQLException e) {
+            handleSQLException(e);
+        }
+    }
+
+    public void query15() {
+        String query = """
+            SELECT
+                Azienda.PIVA,
+                Azienda.Nome,
+                COALESCE(RichiesteCount.NumeroRichieste, 0) AS NumeroRichieste,
+                COALESCE(IscrizioniCount.NumeroIscrizioni, 0) AS NumeroIscrizioni,
+                COALESCE(RichiesteCount.NumeroRichieste, 0) + COALESCE(IscrizioniCount.NumeroIscrizioni, 0) AS TotaleServizi
+            FROM Azienda
+            LEFT JOIN (
+                SELECT Azienda, COUNT(*) AS NumeroRichieste
+                FROM Richiesta
+                GROUP BY Azienda
+            ) AS RichiesteCount ON Azienda.PIVA = RichiesteCount.Azienda
+            LEFT JOIN (
+                SELECT Azienda, COUNT(*) AS NumeroIscrizioni
+                FROM Iscrizione
+                GROUP BY Azienda
+            ) AS IscrizioniCount ON Azienda.PIVA = IscrizioniCount.Azienda
+            WHERE (Azienda.Ruolo = 'Fruitrice' OR Azienda.Ruolo = 'Entrambe')
+            ORDER BY TotaleServizi DESC, Azienda.Nome;
+        """;
+
+        try (PreparedStatement preparedStatement = database.getConnection().prepareStatement(query);
+             ResultSet resultSet = preparedStatement.executeQuery()) {
+
+            System.out.println("\n------ Classifica Aziende Fruitrici ------");
+
+            int posClassifica = 1;
+            while (resultSet.next()) {
+                String piva = resultSet.getString("PIVA");
+                String nome = resultSet.getString("Nome");
+                int numeroRichieste = resultSet.getInt("NumeroRichieste");
+                int numeroIscrizioni = resultSet.getInt("NumeroIscrizioni");
+                int totaleServizi = resultSet.getInt("TotaleServizi");
+
+                System.out.printf("""
+                    %d.
+                    PIVA: %s
+                    Nome: %s
+                    Numero Richieste: %d
+                    Numero Iscrizioni: %d
+                    Totale Servizi: %d
+                    ---------------------------------
+                    """, posClassifica, piva, nome, numeroRichieste, numeroIscrizioni, totaleServizi);
+                posClassifica++;
+            }
+
+        } catch (SQLException e) {
+            handleSQLException(e);
+        }
+    }
+
+    // Metodo per gestire le SQLException
+    private void handleSQLException(SQLException e) {
+        // Verifica se l'errore è causato dal trigger RV1
+        if (e.getSQLState().equals("45000")) {
+            System.out.println("Errore: Il docente è già assegnato a 3 corsi personalizzati.");
+        } else if (e.getSQLState().equals("45001")) {
+            System.out.println("Errore: L'azienda ha superato la spesa massima di 40000 euro.");
+        } else {
+            // In caso di errore generico, stampa il messaggio di errore
+            System.out.println("Errore nella comunicazione con il database: " + e.getMessage());
         }
     }
 }

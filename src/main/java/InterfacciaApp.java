@@ -1,4 +1,3 @@
-import java.io.FileNotFoundException;
 import java.sql.SQLException;
 import java.util.Scanner;
 
@@ -7,7 +6,7 @@ public class InterfacciaApp {
     private Query query;
     private final Scanner scanner = new Scanner(System.in);
 
-    public static void main(String[] args) throws SQLException, ClassNotFoundException, FileNotFoundException {
+    public static void main(String[] args) throws SQLException, ClassNotFoundException {
         InterfacciaApp interfacciaApp = new InterfacciaApp();
 
         interfacciaApp.connessione();
@@ -34,7 +33,7 @@ public class InterfacciaApp {
         database.connect();
     }
 
-    private void dashboard() throws SQLException, FileNotFoundException {
+    private void dashboard() {
         int sel;
 
         while (true) {
@@ -75,10 +74,10 @@ public class InterfacciaApp {
                 case 9 -> query.query9();
                 case 10 -> query.query10();
                 case 11 -> query.query11();
-                /*case 12 -> query.query12();
+                case 12 -> query.query12();
                 case 13 -> query.query13();
                 case 14 -> query.query14();
-                case 15 -> query.query15();*/
+                case 15 -> query.query15();
                 case 0 -> {
                     return;
                 }
