@@ -58,6 +58,10 @@ public class InterfacciaApp {
                     """);
 
             System.out.print("Selezione: ");
+            while (!scanner.hasNextInt()) {
+                System.out.println("Errore: Inserisci un numero valido!");
+                scanner.next();
+            }
             sel = scanner.nextInt();
 
             System.out.println();

@@ -207,7 +207,7 @@ public class Query {
                 updateStatement.setDate(5, dataFine); // Parametro per identificare la classe
                 int tupleAggiornate = updateStatement.executeUpdate();
                 if (tupleAggiornate > 0) {
-                    //System.out.println("Ricavo Classe aggiornato con successo!");
+                    System.out.println("Ricavo Classe aggiornato con successo!");
                 } else {
                     System.out.println("Errore durante l'aggiornamento di Ricavo Classe.");
                 }
