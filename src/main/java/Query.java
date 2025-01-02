@@ -89,13 +89,35 @@ public class Query {
                     AND Classe.DataInizio = ?
                     AND Classe.DataFine = ?
                     """;
+        String trovaAzienda = """
+                SELECT Azienda.Ruolo
+                FROM Azienda
+                WHERE Azienda.PIVA = ?
+                """;
 
         try (PreparedStatement preparedStatement = database.getConnection().prepareStatement(query);
-             PreparedStatement checkStatement = database.getConnection().prepareStatement(trovaClasse)) {
+             PreparedStatement checkStatement = database.getConnection().prepareStatement(trovaClasse);
+             PreparedStatement checkAziendaStatement = database.getConnection().prepareStatement(trovaAzienda)) {
             System.out.println("\n-------------- Iscrizione di un'Azienda ad una classe! --------------");
             System.out.print("Inserisci la P.IVA dell'Azienda: ");
             String azienda = scanner.nextLine();
             preparedStatement.setString(1, azienda);
+            checkAziendaStatement.setString(1, azienda);
+
+            // controllo sul ruolo dell'azienda
+            try (ResultSet resultSet = checkAziendaStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    String ruolo = resultSet.getString("Ruolo");
+
+                    if (!"Fruitrice".equalsIgnoreCase(ruolo) && !"Entrambe".equalsIgnoreCase(ruolo)) {
+                        System.out.println("Errore: Non è possibile iscrivere un'azienda erogatrice!");
+                        return;
+                    }
+                } else {
+                    System.out.println("Errore: L'azienda specificata non esiste.");
+                    return;
+                }
+            }
 
             System.out.print("Inserisci il corso erogato dalla classe: ");
             while (!scanner.hasNextInt()) {
@@ -199,6 +221,8 @@ public class Query {
     public void query3() {
         String query = "INSERT INTO CorsoPersonalizzato (Titolo, Descrizione, NumOre, Modalita, TipoServizio, DataInizio, " +
                 "DataFine, TestDMA, NumeroTrasferte, CostoTotale) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        boolean richiestaCreata = false;    // per assicurarsi che la richiesta sia stata creata
+        Integer idCorsoPersonalizzato = null;
 
         try (PreparedStatement preparedStatement = database.getConnection().prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS)) {
             System.out.println("\n-------------- Richiesta Corso personalizzato! --------------");
@@ -295,14 +319,39 @@ public class Query {
                 // Ottenere l'ID del corso appena creato
                 try (ResultSet generatedKeys = preparedStatement.getGeneratedKeys()) {
                     if (generatedKeys.next()) {
-                        int idCorsoPersonalizzato = generatedKeys.getInt(1); // ID del corso
+                        idCorsoPersonalizzato = generatedKeys.getInt(1); // Recupera l'ID del corso
 
                         // Creazione della richiesta
                         String queryRichiesta = "INSERT INTO Richiesta (Azienda, DataRichiesta, CorsoPersonalizzato) VALUES (?, ?, ?)";
-                        try (PreparedStatement richiestaStatement = database.getConnection().prepareStatement(queryRichiesta)) {
+                        String trovaAzienda = """
+                            SELECT Azienda.Ruolo
+                            FROM Azienda
+                            WHERE Azienda.PIVA = ?
+                        """;
+
+                        try (PreparedStatement richiestaStatement = database.getConnection().prepareStatement(queryRichiesta);
+                             PreparedStatement checkAziendaStatement = database.getConnection().prepareStatement(trovaAzienda)) {
                             System.out.print("Inserisci la P.IVA dell'Azienda che ha effettuato la richiesta: ");
                             String azienda = scanner.nextLine();
                             richiestaStatement.setString(1, azienda);
+                            checkAziendaStatement.setString(1, azienda);
+
+                            // controllo sul ruolo dell'azienda
+                            try (ResultSet resultSet = checkAziendaStatement.executeQuery()) {
+                                if (resultSet.next()) {
+                                    String ruolo = resultSet.getString("Ruolo");
+
+                                    if (!"Fruitrice".equalsIgnoreCase(ruolo) && !"Entrambe".equalsIgnoreCase(ruolo)) {
+                                        System.out.println("Errore: Non è possibile registrare una richiesta di un'azienda erogatrice!");
+                                        eliminaCorsoP(idCorsoPersonalizzato);
+                                        return;
+                                    }
+                                } else {
+                                    System.out.println("Errore: L'azienda specificata non esiste.");
+                                    eliminaCorsoP(idCorsoPersonalizzato);
+                                    return;
+                                }
+                            }
 
                             // Imposta la data odierna
                             Date dataRichiesta = Date.valueOf(LocalDate.now());
@@ -314,6 +363,7 @@ public class Query {
                             // Esecuzione della query per creare la richiesta
                             int tupleInseriteRichiesta = richiestaStatement.executeUpdate();
                             if (tupleInseriteRichiesta > 0) {
+                                richiestaCreata = true;
                                 System.out.println("\n-------------- Richiesta creata con successo! --------------");
                             } else {
                                 System.out.println("\n-------------- Errore durante la creazione della richiesta! --------------");
@@ -330,6 +380,8 @@ public class Query {
             }
         } catch (SQLException e) {
             handleSQLException(e);
+            if(!richiestaCreata && idCorsoPersonalizzato != null)
+                eliminaCorsoP(idCorsoPersonalizzato);
         }
     }
 
@@ -746,6 +798,7 @@ public class Query {
         }
     }
 
+    // 12. Stampa di tutti i corsi a catalogo per i quali non si è mai formata più di una classe
     public void query12() {
         String query = """
             SELECT CorsoCatalogo.*,
@@ -795,6 +848,7 @@ public class Query {
         }
     }
 
+    // 13. Stampa dei dati delle aziende erogatrici, compreso il ricavo totale
     public void query13() {
         String query = """
             SELECT Azienda.*,
@@ -847,6 +901,7 @@ public class Query {
         }
     }
 
+    // 14. Stampa di ogni classe, compreso il ricavo ottenuto mediante la definizione della stessa
     public void query14() {
         String query = """
             SELECT *
@@ -882,6 +937,7 @@ public class Query {
         }
     }
 
+    // 15. Stampa una classifica delle aziende fruitrici sulla base del numero di servizi che ha richiesto
     public void query15() {
         String query = """
             SELECT
@@ -935,11 +991,32 @@ public class Query {
         }
     }
 
+    // Metodo per eliminare un corso personalizzato in caso di errore
+    private void eliminaCorsoP(int idCorso) {
+        String query = "DELETE FROM CorsoPersonalizzato WHERE ID = ?";
+
+        try (PreparedStatement preparedStatement = database.getConnection().prepareStatement(query)) {
+            // Imposta il valore del parametro ID
+            preparedStatement.setInt(1, idCorso);
+
+            int righeEliminate = preparedStatement.executeUpdate();
+
+            if (righeEliminate > 0) {
+                System.out.println("Corso personalizzato eliminato con successo!");
+            } else {
+                System.out.println("Nessun corso personalizzato trovato con l'ID specificato.");
+            }
+        } catch (SQLException e) {
+            handleSQLException(e);
+        }
+    }
+
     // Metodo per gestire le SQLException
     private void handleSQLException(SQLException e) {
         // Verifica se l'errore è causato dal trigger RV1
         if (e.getSQLState().equals("45000")) {
             System.out.println("Errore: Il docente è già assegnato a 3 corsi personalizzati.");
+            // Verifica se l'errore è causato dal trigger RV3
         } else if (e.getSQLState().equals("45001")) {
             System.out.println("Errore: L'azienda ha superato la spesa massima di 40000 euro.");
         } else {

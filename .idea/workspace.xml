@@ -4,7 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ae4a01d0-728e-461d-952a-3233dbae1054" name="Changes" comment="Implementazioni di query 12-15 e miglioramenti alla robustezza del codice">
+    <list default="true" id="ae4a01d0-728e-461d-952a-3233dbae1054" name="Changes" comment="Miglioramenti alla query2">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/Query.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Query.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -113,7 +114,10 @@
       <workItem from="1735377319732" duration="5166000" />
       <workItem from="1735477390609" duration="2604000" />
       <workItem from="1735545709526" duration="10770000" />
-      <workItem from="1735569128626" duration="3142000" />
+      <workItem from="1735569128626" duration="4608000" />
+      <workItem from="1735577003108" duration="1043000" />
+      <workItem from="1735740624157" duration="2994000" />
+      <workItem from="1735809235544" duration="1960000" />
     </task>
     <task id="LOCAL-00001" summary="Merging">
       <option name="closed" value="true" />
@@ -179,7 +183,15 @@
       <option name="project" value="LOCAL" />
       <updated>1735571961124</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="Miglioramenti alla query2">
+      <option name="closed" value="true" />
+      <created>1735572815515</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1735572815515</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -194,6 +206,7 @@
     <MESSAGE value="Implementazioni di query 8-11 (aggiunta commenti per leggibilità)" />
     <MESSAGE value="Implementazioni di query 8-11 (risoluzione warnings)" />
     <MESSAGE value="Implementazioni di query 12-15 e miglioramenti alla robustezza del codice" />
-    <option name="LAST_COMMIT_MESSAGE" value="Implementazioni di query 12-15 e miglioramenti alla robustezza del codice" />
+    <MESSAGE value="Miglioramenti alla query2" />
+    <option name="LAST_COMMIT_MESSAGE" value="Miglioramenti alla query2" />
   </component>
 </project>
