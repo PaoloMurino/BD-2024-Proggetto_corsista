@@ -65,6 +65,7 @@ public class Query {
             }
             double costoAPersona = scanner.nextDouble();
             preparedStatement.setDouble(8, costoAPersona);
+            scanner.nextLine(); // Pulizia del buffer
 
             // Esecuzione della query
             int tupleInserite = preparedStatement.executeUpdate();
@@ -701,7 +702,7 @@ public class Query {
                     String cognome = resultSet.getString("Cognome");
                     String azienda = resultSet.getString("Azienda");
 
-                    System.out.println("- CF: " + cf + ", Nome: " + nome + ", Cognome: " + cognome + ", Azienda: " + azienda);
+                    System.out.println("- CF: " + cf + " | Nome: " + nome + " | Cognome: " + cognome + " | Azienda: " + azienda);
                     hasResults = true;
                 }
 
@@ -760,6 +761,7 @@ public class Query {
                 Dipendente.CF,
                 Dipendente.Nome,
                 Dipendente.Cognome,
+                Dipendente.Azienda,
                 COALESCE(G.TotaleGestione, 0) + COALESCE(C.TotaleCollaborazione, 0) AS TotalePartecipazioni
             FROM
                 Dipendente
@@ -785,10 +787,11 @@ public class Query {
                 String cf = resultSet.getString("CF");
                 String nome = resultSet.getString("Nome");
                 String cognome = resultSet.getString("Cognome");
+                String azienda = resultSet.getString("Azienda");
                 int totalePartecipazioni = resultSet.getInt("TotalePartecipazioni");
 
-                System.out.printf("CF: %s | Nome: %s | Cognome: %s | Totale Partecipazioni: %d%n",
-                        cf, nome, cognome, totalePartecipazioni);
+                System.out.printf("CF: %s | Nome: %s | Cognome: %s | Azienda: %s | Totale Partecipazioni: %d%n",
+                        cf, nome, cognome, azienda, totalePartecipazioni);
             } else {
                 System.out.println("Nessun docente trovato.");
             }

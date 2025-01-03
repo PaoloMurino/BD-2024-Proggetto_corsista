@@ -4,7 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ae4a01d0-728e-461d-952a-3233dbae1054" name="Changes" comment="Miglioramenti alla query3">
+    <list default="true" id="ae4a01d0-728e-461d-952a-3233dbae1054" name="Changes" comment="Miglioramenti all'interfaccia e termine prima versione di tutte le query">
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/Query.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Query.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -116,7 +118,8 @@
       <workItem from="1735569128626" duration="4608000" />
       <workItem from="1735577003108" duration="1043000" />
       <workItem from="1735740624157" duration="2994000" />
-      <workItem from="1735809235544" duration="2416000" />
+      <workItem from="1735809235544" duration="2602000" />
+      <workItem from="1735897224800" duration="1257000" />
     </task>
     <task id="LOCAL-00001" summary="Merging">
       <option name="closed" value="true" />
@@ -198,7 +201,15 @@
       <option name="project" value="LOCAL" />
       <updated>1735811434244</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="Miglioramenti all'interfaccia e termine prima versione di tutte le query">
+      <option name="closed" value="true" />
+      <created>1735811838224</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1735811838224</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -215,6 +226,7 @@
     <MESSAGE value="Implementazioni di query 12-15 e miglioramenti alla robustezza del codice" />
     <MESSAGE value="Miglioramenti alla query2" />
     <MESSAGE value="Miglioramenti alla query3" />
-    <option name="LAST_COMMIT_MESSAGE" value="Miglioramenti alla query3" />
+    <MESSAGE value="Miglioramenti all'interfaccia e termine prima versione di tutte le query" />
+    <option name="LAST_COMMIT_MESSAGE" value="Miglioramenti all'interfaccia e termine prima versione di tutte le query" />
   </component>
 </project>
