@@ -792,9 +792,18 @@ public class Query {
             LEFT JOIN
                 (SELECT Docente, COUNT(*) AS TotaleCollaborazione FROM Collaborazione GROUP BY Docente) AS C
                 ON Docente.CF = C.Docente
-            ORDER BY
-                TotalePartecipazioni DESC
-            LIMIT 1;
+            WHERE
+                COALESCE(G.TotaleGestione, 0) + COALESCE(C.TotaleCollaborazione, 0) = (
+                    SELECT MAX(COALESCE(G.TotaleGestione, 0) + COALESCE(C.TotaleCollaborazione, 0))
+                    FROM
+                        Docente
+                    LEFT JOIN
+                        (SELECT Docente, COUNT(*) AS TotaleGestione FROM Gestione GROUP BY Docente) AS G
+                        ON Docente.CF = G.Docente
+                    LEFT JOIN
+                        (SELECT Docente, COUNT(*) AS TotaleCollaborazione FROM Collaborazione GROUP BY Docente) AS C
+                        ON Docente.CF = C.Docente
+                );
         """;
 
         try (PreparedStatement preparedStatement = database.getConnection().prepareStatement(query);
@@ -802,17 +811,15 @@ public class Query {
 
             System.out.println("\n-------------- Docente maggiormente impiegato --------------");
 
-            if (resultSet.next()) {
+            while (resultSet.next()) {
                 String cf = resultSet.getString("CF");
                 String nome = resultSet.getString("Nome");
                 String cognome = resultSet.getString("Cognome");
                 String azienda = resultSet.getString("Azienda");
                 int totalePartecipazioni = resultSet.getInt("TotalePartecipazioni");
 
-                System.out.printf("CF: %s | Nome: %s | Cognome: %s | Azienda: %s | Totale Partecipazioni: %d%n",
+                System.out.printf("- CF: %s | Nome: %s | Cognome: %s | Azienda: %s | Totale Impieghi: %d%n",
                         cf, nome, cognome, azienda, totalePartecipazioni);
-            } else {
-                System.out.println("Nessun docente trovato.");
             }
 
         } catch (SQLException e) {

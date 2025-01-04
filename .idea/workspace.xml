@@ -4,9 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ae4a01d0-728e-461d-952a-3233dbae1054" name="Changes" comment="Miglioramenti alla leggibilità delle query">
+    <list default="true" id="ae4a01d0-728e-461d-952a-3233dbae1054" name="Changes" comment="Aggiunta verifica sui vincoli di integrità dei dati dichiarati nella Parte 1 del progetto">
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/InterfacciaApp.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/InterfacciaApp.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/Query.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Query.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -120,7 +120,8 @@
       <workItem from="1735740624157" duration="2994000" />
       <workItem from="1735809235544" duration="2602000" />
       <workItem from="1735897224800" duration="1406000" />
-      <workItem from="1735988853701" duration="3797000" />
+      <workItem from="1735988853701" duration="3929000" />
+      <workItem from="1736001473111" duration="2220000" />
     </task>
     <task id="LOCAL-00001" summary="Merging">
       <option name="closed" value="true" />
@@ -218,7 +219,15 @@
       <option name="project" value="LOCAL" />
       <updated>1735899173220</updated>
     </task>
-    <option name="localTasksCounter" value="13" />
+    <task id="LOCAL-00013" summary="Aggiunta verifica sui vincoli di integrità dei dati dichiarati nella Parte 1 del progetto">
+      <option name="closed" value="true" />
+      <created>1735992819885</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1735992819885</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -237,6 +246,7 @@
     <MESSAGE value="Miglioramenti alla query3" />
     <MESSAGE value="Miglioramenti all'interfaccia e termine prima versione di tutte le query" />
     <MESSAGE value="Miglioramenti alla leggibilità delle query" />
-    <option name="LAST_COMMIT_MESSAGE" value="Miglioramenti alla leggibilità delle query" />
+    <MESSAGE value="Aggiunta verifica sui vincoli di integrità dei dati dichiarati nella Parte 1 del progetto" />
+    <option name="LAST_COMMIT_MESSAGE" value="Aggiunta verifica sui vincoli di integrità dei dati dichiarati nella Parte 1 del progetto" />
   </component>
 </project>
