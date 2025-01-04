@@ -27,7 +27,7 @@ public class InterfacciaApp {
         String password = scanner.nextLine();*/
 
         //database = new Database(databaseName, username, password);
-        database = new Database("servizidiformazione", "root", "Paolinoerra01!");
+        database = new Database("servizidiformazione", "gestoreCorsi", "basididati2024");
         query = new Query(database);
 
         database.connect();
