@@ -10,7 +10,7 @@ public class InterfacciaApp {
         InterfacciaApp interfacciaApp = new InterfacciaApp();
 
         interfacciaApp.connessione();
-        interfacciaApp.dashboard();
+        interfacciaApp.interfaccia();
         interfacciaApp.database.close();
 
         System.out.println("-------------- Connessione terminata --------------");
@@ -33,7 +33,7 @@ public class InterfacciaApp {
         database.connect();
     }
 
-    private void dashboard() {
+    private void interfaccia() {
         int sel;
 
         while (true) {

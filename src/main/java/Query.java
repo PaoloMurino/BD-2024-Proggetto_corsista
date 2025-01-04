@@ -91,7 +91,7 @@ public class Query {
                     AND Classe.DataFine = ?
                     """;
         String trovaAzienda = """
-                SELECT Azienda.Ruolo
+                SELECT Azienda.Ruolo, Azienda.NumDipendenti
                 FROM Azienda
                 WHERE Azienda.PIVA = ?
                 """;
@@ -105,10 +105,12 @@ public class Query {
             preparedStatement.setString(1, azienda);
             checkAziendaStatement.setString(1, azienda);
 
+            int aziendaDipendenti;  // Variabile per il controllo del numero di dipendenti
             // controllo sul ruolo dell'azienda
             try (ResultSet resultSet = checkAziendaStatement.executeQuery()) {
                 if (resultSet.next()) {
                     String ruolo = resultSet.getString("Ruolo");
+                    aziendaDipendenti = resultSet.getInt("NumDipendenti");
 
                     if (!"Fruitrice".equalsIgnoreCase(ruolo) && !"Entrambe".equalsIgnoreCase(ruolo)) {
                         System.out.println("Errore: Non è possibile iscrivere un'azienda erogatrice!");
@@ -173,11 +175,19 @@ public class Query {
             }
 
             System.out.print("Inserisci il numero di dipendenti da iscrivere: ");
-            while (!scanner.hasNextInt()) {
-                System.out.println("Errore: Inserisci un numero valido!");
-                scanner.next();
-            }
-            int numDipendenti = scanner.nextInt();
+            int numDipendenti = -1; // Valore non valido per l'inserimento
+            do {
+                while (!scanner.hasNextInt()) {
+                    System.out.println("Errore: Inserisci un numero valido!");
+                    scanner.next(); // Pulizia del buffer per input non valido
+                }
+                numDipendenti = scanner.nextInt();
+                if (numDipendenti > aziendaDipendenti) {
+                    System.out.println("Errore: L'azienda specificata non ha tutti questi dipendenti! Riprova.");
+                } else {
+                    break; // Esce dal ciclo se il valore è valido
+                }
+            } while (true);
             preparedStatement.setInt(5, numDipendenti);
             scanner.nextLine(); // Pulizia del buffer
 
@@ -265,7 +275,16 @@ public class Query {
             while (dataInizio == null) {
                 String dataInizioInput = scanner.nextLine();
                 try {
-                    dataInizio = Date.valueOf(dataInizioInput);
+                    // Converte l'input in LocalDate
+                    LocalDate dataInserita = LocalDate.parse(dataInizioInput);
+
+                    // Verifica che la data non sia nel passato
+                    if (dataInserita.isBefore(LocalDate.now())) {
+                        System.out.println("Errore: La data di inizio del corso non può essere nel passato! Riprova: ");
+                    } else {
+                        // Se la data è valida, convertila in java.sql.Date
+                        dataInizio = Date.valueOf(dataInserita);
+                    }
                 } catch (IllegalArgumentException e) {
                     System.out.println("Errore: Formato data non valido! Riprova (esempio: 2024-12-30): ");
                 }
@@ -337,7 +356,7 @@ public class Query {
                             richiestaStatement.setString(1, azienda);
                             checkAziendaStatement.setString(1, azienda);
 
-                            // controllo sul ruolo dell'azienda
+                            // Controllo sul ruolo dell'azienda
                             try (ResultSet resultSet = checkAziendaStatement.executeQuery()) {
                                 if (resultSet.next()) {
                                     String ruolo = resultSet.getString("Ruolo");
