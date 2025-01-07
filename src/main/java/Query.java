@@ -97,10 +97,10 @@ public class Query {
                 """;
 
         try (PreparedStatement preparedStatement = database.getConnection().prepareStatement(query);
-             PreparedStatement checkStatement = database.getConnection().prepareStatement(trovaClasse);
+             PreparedStatement checkClasseStatement = database.getConnection().prepareStatement(trovaClasse);
              PreparedStatement checkAziendaStatement = database.getConnection().prepareStatement(trovaAzienda)) {
             System.out.println("\n-------------- Iscrizione di un'Azienda ad una classe! --------------");
-            System.out.print("Inserisci la P.IVA dell'Azienda: ");
+            System.out.print("Inserisci la P.IVA dell'Azienda da iscrivere: ");
             String azienda = scanner.nextLine();
             preparedStatement.setString(1, azienda);
             checkAziendaStatement.setString(1, azienda);
@@ -129,7 +129,7 @@ public class Query {
             }
             int corsoClasse = scanner.nextInt();
             preparedStatement.setInt(4, corsoClasse);
-            checkStatement.setInt(1, corsoClasse);
+            checkClasseStatement.setInt(1, corsoClasse);
             scanner.nextLine(); // Pulizia del buffer
 
             System.out.print("Inserisci la data di inizio della classe (formato YYYY-MM-DD): ");
@@ -143,7 +143,7 @@ public class Query {
                 }
             }
             preparedStatement.setDate(2, dataInizio);
-            checkStatement.setDate(2, dataInizio);
+            checkClasseStatement.setDate(2, dataInizio);
 
             System.out.print("Inserisci la data di fine della classe (formato YYYY-MM-DD): ");
             Date dataFine = null;
@@ -156,10 +156,10 @@ public class Query {
                 }
             }
             preparedStatement.setDate(3, dataFine);
-            checkStatement.setDate(3, dataFine);
+            checkClasseStatement.setDate(3, dataFine);
 
             // controllo sulla data di scadenza iscrizioni
-            try (ResultSet resultSet = checkStatement.executeQuery()) {
+            try (ResultSet resultSet = checkClasseStatement.executeQuery()) {
                 if (resultSet.next()) {
                     Date dataScadenzaIscrizioni = resultSet.getDate("DataScadenzaIscrizioni");
                     Date dataOggi = new Date(System.currentTimeMillis());
@@ -456,12 +456,27 @@ public class Query {
     public void query4() {
         String query = "INSERT INTO Collaborazione (Docente, CorsoClasse, DataInizioClasse, DataFineClasse)  " +
                 "VALUES (?, ?, ?, ?)";
+        String docenteQuery = """
+                SELECT Azienda
+                FROM Dipendente
+                WHERE CF = ?
+                """;
+        String classeQuery = """
+                SELECT Azienda
+                FROM Classe
+                WHERE CorsoCatalogo = ?
+                AND DataInizio = ?
+                AND DataFine = ?
+                """;
 
-        try (PreparedStatement preparedStatement = database.getConnection().prepareStatement(query)) {
+        try (PreparedStatement preparedStatement = database.getConnection().prepareStatement(query);
+             PreparedStatement checkDocenteStatement = database.getConnection().prepareStatement(docenteQuery);
+             PreparedStatement checkClasseStatement = database.getConnection().prepareStatement(classeQuery)) {
             System.out.println("\n-------------- Aggiunta di un nuovo docente ad una classe! --------------");
             System.out.print("Inserisci il CF del docente: ");
             String docente = scanner.nextLine();
             preparedStatement.setString(1, docente);
+            checkDocenteStatement.setString(1, docente);
 
             System.out.print("Inserisci il corso erogato dalla classe: ");
             while (!scanner.hasNextInt()) {
@@ -470,6 +485,7 @@ public class Query {
             }
             int corsoClasse = scanner.nextInt();
             preparedStatement.setInt(2, corsoClasse);
+            checkClasseStatement.setInt(1, corsoClasse);
             scanner.nextLine(); // Pulizia del buffer
 
             System.out.print("Inserisci la data di inizio della classe (formato YYYY-MM-DD): ");
@@ -483,6 +499,7 @@ public class Query {
                 }
             }
             preparedStatement.setDate(3, dataInizio);
+            checkClasseStatement.setDate(2, dataInizio);
 
             System.out.print("Inserisci la data di fine della classe (formato YYYY-MM-DD): ");
             Date dataFine = null;
@@ -490,11 +507,41 @@ public class Query {
                 String dataFineInput = scanner.nextLine();
                 try {
                     dataFine = Date.valueOf(dataFineInput);
+                    LocalDate oggi = LocalDate.now();
+                    if (dataFine.toLocalDate().isBefore(oggi)) {
+                        System.out.println("Errore: Non puoi aggiungere un docente ad una classe che è terminata!");
+                        return;
+                    }
                 } catch (IllegalArgumentException e) {
                     System.out.println("Errore: Formato data non valido! Riprova (esempio: 2024-12-30): ");
                 }
             }
             preparedStatement.setDate(4, dataFine);
+            checkClasseStatement.setDate(3, dataFine);
+
+            // Controllo che docente e classe appartengano alla stessa Azienda
+            try(ResultSet resultSetClasse = checkClasseStatement.executeQuery();
+                ResultSet resultSetDocente = checkDocenteStatement.executeQuery()) {
+
+                if (resultSetClasse.next()) {
+                    if (resultSetDocente.next()) {
+                        String aziendaDocente = resultSetDocente.getString("Azienda");
+                        String aziendaClasse = resultSetClasse.getString("Azienda");
+                        if(!aziendaClasse.equals(aziendaDocente)) {
+                            System.out.println("Errore: Il docente non appartiene all'Azienda che eroga la classe!");
+                            return;
+                        }
+                    }
+                    else {
+                        System.out.println("Errore: Il docente specificato non esiste!");
+                        return;
+                    }
+                }
+                else {
+                    System.out.println("Errore: La classe specificata non esiste!");
+                    return;
+                }
+            }
 
             // Esecuzione della query
             int tupleInserite = preparedStatement.executeUpdate();
