@@ -4,7 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ae4a01d0-728e-461d-952a-3233dbae1054" name="Changes" comment="Creazione utente per gestire il database">
+    <list default="true" id="ae4a01d0-728e-461d-952a-3233dbae1054" name="Changes" comment="Miglioramenti alla query 4">
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/Query.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Query.java" afterDir="false" />
     </list>
@@ -122,7 +123,9 @@
       <workItem from="1735988853701" duration="3929000" />
       <workItem from="1736001473111" duration="2470000" />
       <workItem from="1736006030829" duration="908000" />
-      <workItem from="1736240993160" duration="2992000" />
+      <workItem from="1736240993160" duration="3529000" />
+      <workItem from="1736263130534" duration="2063000" />
+      <workItem from="1736272000593" duration="4572000" />
     </task>
     <task id="LOCAL-00001" summary="Merging">
       <option name="closed" value="true" />
@@ -244,7 +247,15 @@
       <option name="project" value="LOCAL" />
       <updated>1736006923883</updated>
     </task>
-    <option name="localTasksCounter" value="16" />
+    <task id="LOCAL-00016" summary="Miglioramenti alla query 4">
+      <option name="closed" value="true" />
+      <created>1736244526074</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1736244526074</updated>
+    </task>
+    <option name="localTasksCounter" value="17" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -266,6 +277,7 @@
     <MESSAGE value="Aggiunta verifica sui vincoli di integrità dei dati dichiarati nella Parte 1 del progetto" />
     <MESSAGE value="Miglioramenti alla query 11" />
     <MESSAGE value="Creazione utente per gestire il database" />
-    <option name="LAST_COMMIT_MESSAGE" value="Creazione utente per gestire il database" />
+    <MESSAGE value="Miglioramenti alla query 4" />
+    <option name="LAST_COMMIT_MESSAGE" value="Miglioramenti alla query 4" />
   </component>
 </project>

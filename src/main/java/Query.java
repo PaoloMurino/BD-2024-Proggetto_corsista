@@ -456,27 +456,27 @@ public class Query {
     public void query4() {
         String query = "INSERT INTO Collaborazione (Docente, CorsoClasse, DataInizioClasse, DataFineClasse)  " +
                 "VALUES (?, ?, ?, ?)";
-        String docenteQuery = """
-                SELECT Azienda
-                FROM Dipendente
-                WHERE CF = ?
-                """;
         String classeQuery = """
-                SELECT Azienda
-                FROM Classe
-                WHERE CorsoCatalogo = ?
-                AND DataInizio = ?
-                AND DataFine = ?
-                """;
+            SELECT Azienda
+            FROM Classe
+            WHERE CorsoCatalogo = ?
+            AND DataInizio = ?
+            AND DataFine = ?
+            """;
+
+        String docenteQuery = """
+            SELECT Docente
+            FROM Collaborazione
+            WHERE CorsoClasse = ?
+            AND DataInizioClasse = ?
+            AND DataFineClasse = ?
+            """;
 
         try (PreparedStatement preparedStatement = database.getConnection().prepareStatement(query);
-             PreparedStatement checkDocenteStatement = database.getConnection().prepareStatement(docenteQuery);
-             PreparedStatement checkClasseStatement = database.getConnection().prepareStatement(classeQuery)) {
+             PreparedStatement checkClasseStatement = database.getConnection().prepareStatement(classeQuery);
+             PreparedStatement checkDocenteStatement = database.getConnection().prepareStatement(docenteQuery)) {
+
             System.out.println("\n-------------- Aggiunta di un nuovo docente ad una classe! --------------");
-            System.out.print("Inserisci il CF del docente: ");
-            String docente = scanner.nextLine();
-            preparedStatement.setString(1, docente);
-            checkDocenteStatement.setString(1, docente);
 
             System.out.print("Inserisci il corso erogato dalla classe: ");
             while (!scanner.hasNextInt()) {
@@ -486,6 +486,7 @@ public class Query {
             int corsoClasse = scanner.nextInt();
             preparedStatement.setInt(2, corsoClasse);
             checkClasseStatement.setInt(1, corsoClasse);
+            checkDocenteStatement.setInt(1, corsoClasse);
             scanner.nextLine(); // Pulizia del buffer
 
             System.out.print("Inserisci la data di inizio della classe (formato YYYY-MM-DD): ");
@@ -500,6 +501,7 @@ public class Query {
             }
             preparedStatement.setDate(3, dataInizio);
             checkClasseStatement.setDate(2, dataInizio);
+            checkDocenteStatement.setDate(2, dataInizio);
 
             System.out.print("Inserisci la data di fine della classe (formato YYYY-MM-DD): ");
             Date dataFine = null;
@@ -518,30 +520,32 @@ public class Query {
             }
             preparedStatement.setDate(4, dataFine);
             checkClasseStatement.setDate(3, dataFine);
+            checkDocenteStatement.setDate(3, dataFine);
 
-            // Controllo che docente e classe appartengano alla stessa Azienda
-            try(ResultSet resultSetClasse = checkClasseStatement.executeQuery();
-                ResultSet resultSetDocente = checkDocenteStatement.executeQuery()) {
+            // Trova la Classe
+            ResultSet resultSetClasse = checkClasseStatement.executeQuery();
+            String aziendaClasse = null;
+            if (resultSetClasse.next()) {
+                aziendaClasse = resultSetClasse.getString("Azienda");
+            }
 
-                if (resultSetClasse.next()) {
-                    if (resultSetDocente.next()) {
-                        String aziendaDocente = resultSetDocente.getString("Azienda");
-                        String aziendaClasse = resultSetClasse.getString("Azienda");
-                        if(!aziendaClasse.equals(aziendaDocente)) {
-                            System.out.println("Errore: Il docente non appartiene all'Azienda che eroga la classe!");
-                            return;
-                        }
-                    }
-                    else {
-                        System.out.println("Errore: Il docente specificato non esiste!");
-                        return;
-                    }
-                }
-                else {
-                    System.out.println("Errore: La classe specificata non esiste!");
+            // Trova il docente attualmente associato alla classe
+            ResultSet resultSetDocente = checkDocenteStatement.executeQuery();
+            String docenteAttuale = null;
+            if (resultSetDocente.next()) {
+                docenteAttuale = resultSetDocente.getString("Docente");
+            }
+
+            if (docenteAttuale != null) {
+                boolean docentiDisponibili = stampaDocentiAzienda(aziendaClasse, docenteAttuale);
+                if (!docentiDisponibili){
                     return;
                 }
             }
+
+            System.out.print("Inserisci il CF del docente: ");
+            String docente = scanner.nextLine();
+            preparedStatement.setString(1, docente);
 
             // Esecuzione della query
             int tupleInserite = preparedStatement.executeUpdate();
@@ -555,15 +559,27 @@ public class Query {
         }
     }
 
+
     // 5. Modifica del docente a cui è affidato un corso personalizzato
     public void query5() {
         String updateQuery = """
-                UPDATE Gestione
-                SET Docente = ?
-                WHERE Gestione.CorsoPersonalizzato = ?
-            """;
+            UPDATE Gestione
+            SET Docente = ?
+            WHERE Gestione.CorsoPersonalizzato = ?
+        """;
+        String query = """
+            SELECT Azienda.PIVA, Gestione.Docente
+            FROM Azienda
+            JOIN Dipendente ON Azienda.PIVA = Dipendente.Azienda
+            JOIN Docente ON Dipendente.CF = Docente.CF
+            JOIN Gestione ON Docente.CF = Gestione.Docente
+            JOIN CorsoPersonalizzato ON Gestione.CorsoPersonalizzato = CorsoPersonalizzato.ID
+            WHERE CorsoPersonalizzato.ID = ?
+        """;
 
-        try (PreparedStatement preparedStatement = database.getConnection().prepareStatement(updateQuery)) {
+        try (PreparedStatement preparedStatement = database.getConnection().prepareStatement(updateQuery);
+             PreparedStatement aziendaStatement = database.getConnection().prepareStatement(query)) {
+
             System.out.println("\n-------------- Modifica docente di un Corso personalizzato! --------------");
 
             System.out.print("Inserisci il corso di cui si vuole modificare il docente: ");
@@ -573,12 +589,27 @@ public class Query {
             }
             int corsoPersonalizzato = scanner.nextInt();
             preparedStatement.setInt(2, corsoPersonalizzato);
+            aziendaStatement.setInt(1, corsoPersonalizzato);
             scanner.nextLine(); // Pulizia del buffer
+
+            // Ottiene l'azienda e il docente attuale del corso personalizzato
+            ResultSet resultSet = aziendaStatement.executeQuery();
+            if (resultSet.next()) {
+                String azienda = resultSet.getString("PIVA");
+                String docenteAttuale = resultSet.getString("Docente");
+
+                // Stampa i docenti che lavorano per la stessa azienda, escludendo quello attuale
+                boolean docentiDisponibili = stampaDocentiAzienda(azienda, docenteAttuale);
+                if (!docentiDisponibili) {
+                    return;
+                }
+            }
 
             System.out.print("Inserisci il nuovo docente: ");
             String docente = scanner.nextLine();
             preparedStatement.setString(1, docente);
 
+            // Esegui la query per aggiornare il docente
             int tupleInserite = preparedStatement.executeUpdate();
             if (tupleInserite > 0) {
                 System.out.println("\n-------------- Docente modificato con successo! --------------");
@@ -589,6 +620,43 @@ public class Query {
             handleSQLException(e);
         }
     }
+
+
+    private boolean stampaDocentiAzienda(String Azienda, String docenteAttuale) {
+        String query = """
+        SELECT Docente.CF
+        FROM Azienda
+        JOIN Dipendente ON Azienda.PIVA = Dipendente.Azienda
+        JOIN Docente ON Dipendente.CF = Docente.CF
+        WHERE Azienda.PIVA = ? AND Docente.CF != ?
+        """;
+
+        try(PreparedStatement preparedStatement = database.getConnection().prepareStatement(query)){
+            preparedStatement.setString(1, Azienda);
+            preparedStatement.setString(2, docenteAttuale);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            boolean docentiTrovati = false; // Flag per verificare se ci sono altri docenti
+            System.out.println("\nDocenti che lavorano per l'azienda selezionata:");
+            while(resultSet.next()) {
+                String docente = resultSet.getString(1);
+                System.out.println("- " + docente);
+                docentiTrovati = true;
+            }
+
+            if (!docentiTrovati) {
+                System.out.println("\nNessun altro docente disponibile per l'azienda selezionata.");
+                return false;
+            }
+
+        } catch(SQLException e){
+            handleSQLException(e);
+        }
+        return true;
+    }
+
+
 
     // 6. Stampa di tutti i corsi a catalogo messi a disposizione da un'azienda erogatrice
     public void query6() {

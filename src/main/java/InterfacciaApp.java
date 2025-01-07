@@ -19,15 +19,14 @@ public class InterfacciaApp {
     private void connessione() throws SQLException, ClassNotFoundException {
         System.out.println("-------------- Connessione al database --------------");
 
-        /*System.out.print("Inserire il nome del database: ");
+        System.out.print("Inserire il nome del database: ");
         String databaseName = scanner.nextLine();
         System.out.print("Inserire nome utente: ");
         String username = scanner.nextLine();
         System.out.print("Inserire password: ");
-        String password = scanner.nextLine();*/
+        String password = scanner.nextLine();
 
-        //database = new Database(databaseName, username, password);
-        database = new Database("servizidiformazione", "gestoreCorsi", "basididati2024");
+        database = new Database(databaseName, username, password);
         query = new Query(database);
 
         database.connect();
